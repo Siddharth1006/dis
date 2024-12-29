@@ -1,4 +1,5 @@
 import path from 'path';
+import fs from 'fs/promises'
 
 class Dis {
     // different methods => commit method, add files method.
@@ -13,5 +14,13 @@ class Dis {
         
         //staging area
         this.indexPath = path.join(this.repoPath, 'index'); // .dis/index
+
+        this.init();
+    }
+
+    async init() {
+        //recursively creates an objects folder inside .dis folder.
+        await fs.mkdir(this.objectsPath , { recursive:true });
+    
     }
 }
