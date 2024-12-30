@@ -80,6 +80,7 @@ class Dis {
         try {
             return await fs.readFile(this.headPath , { encoding: 'utf-8' });
         } catch {
+            return null; // first commit won't have HEAD. corner case
         }
     }
 }
