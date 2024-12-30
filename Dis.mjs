@@ -5,6 +5,9 @@ import fs from 'fs/promises'
 import crypto from 'crypto';
 import chalk from 'chalk';
 import { diffLines } from 'diff';
+import { Command } from 'commander';
+
+const program = new Command();
 
 class Dis {
     // different methods => commit method, add files method.
@@ -166,10 +169,38 @@ class Dis {
     }
 }
 
-(async () => {
+/*(async () => {
     const dis = new Dis();
     // await dis.add('demo.txt');
     // await dis.commit('Sixth commit');
     // await dis.history();
     await dis.showCommitDiff('3409523de784717dd61c75160720a392e2cfb621');
-})();
+})(); */
+
+program.command('init').action(async () => {
+    const dis = new Dis();
+});
+
+program.command('add <file> ').action(async (file) => {
+    const dis = new Dis();
+    await dis.add(file);
+});
+
+program.command('commit <message>').action(async (message) => {
+    const dis = new Dis();
+    await dis.commit(message);
+});
+
+program.command('history').action(async() => {
+    const dis = new Dis();
+    await dis.history();
+});
+
+program.command('show <commitHash>').action(async (commitHash) => {
+    const dis = new Dis();
+    await dis.showCommitDiff(commitHash);
+});
+
+
+//program will read from here
+program.parse(process.argv);
