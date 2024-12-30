@@ -40,6 +40,9 @@ class Dis {
         const fileHash = this.hashObject(fileContent);
 
         console.log(fileHash);
+        
+        const fileHashedObjectPath = path.join(this.objectsPath, fileHash); //adds to the object path - .dis/objects/ea09ef093797db5044495be55c9a85cea2d1eb41
+        await fs.writeFile(fileHashedObjectPath, fileContent); //adds the file changes into the new file.
     }
 }
 
