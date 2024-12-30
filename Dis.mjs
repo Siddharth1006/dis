@@ -42,8 +42,6 @@ class Dis {
         await fs.writeFile(fileHashedObjectPath, fileContent); //adds the file changes into the new file.
         await this.updateStagingArea(fileToAdd , fileHash);
         console.log(`Added ${fileToAdd}`);
-        const commitMessage = prompt("Enter commit message")
-        await this.commit(commitMessage);
     }
 
     async updateStagingArea(filePath , fileHash) {
@@ -85,5 +83,8 @@ class Dis {
     }
 }
 
-const dis = new Dis();
-dis.add('demo.txt');
+(async () => {
+    const dis = new Dis();
+    await dis.add('demo.txt');
+    await dis.commit('Test commit');
+})();
