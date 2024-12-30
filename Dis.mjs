@@ -92,6 +92,55 @@ class Dis {
                 currentCommitHash = commitData.parent; //point to parent hash
         }
     }
+
+    async showCommitDiff(commitHash) {
+        const commitData = JSON.parse(await this.getCommitData(commitHash));
+
+        if (!commitData) {
+            console.log("Commit not found");
+            return;
+        }
+
+        console.log("Changes in the last commit are: ");
+
+        for (const file of commitData.files) {
+            console.log(`File: ${file.path}`);
+            const fileHash = file.hash;
+            const fileContent = await this.getFileContent(fileHash);
+            console.log(`FileContent: ${fileContent}`);
+            
+            //now comparing that with the parent commitHash data changes.
+            if (commitData.parent) {
+                const parentCommitData = JSON.parse(await this.getCommitData(commitData.parent));
+                const parentFileContent = await this.getParentFileContent(parentCommitData , file.path);
+            }
+        }
+    }
+
+    async getCommitData(commitHash) {
+        const commitPath = path.join(this.objectsPath, commitHash);
+        try {
+            return await fs.readFile(commitPath, { encoding: 'utf-8' });
+        } catch (error) {
+            console.log("Failed to read the commit data!" , error);
+            return null;
+        }
+    }
+
+    async getParentFileContent(parentCommitData , FilePath) {
+        // checking if the file exists in parent and child commit i.e., first and next commit.
+        const parentFile = parentCommitData.files.find(parentFile => parentFile.path === FilePath); 
+        
+        //if the file exists
+        if (parentFile) {
+            return await this.getFileContent(parentFile.hash); // read the content
+        }
+    }
+
+    async getFileContent(fileHash) {
+        const objectPath = path.join(this.objectsPath, fileHash);
+        return fs.readFile(objectPath, { encoding: 'utf-8' });
+    }
 }
 
 (async () => {
