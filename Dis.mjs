@@ -1,6 +1,8 @@
 import path from 'path';
 import fs from 'fs/promises'
 
+import crypto from 'crypto';
+
 class Dis {
     // different methods => commit method, add files method.
     // all are invoked from Dis class.
@@ -28,6 +30,18 @@ class Dis {
             console.log("Already initialized the .dis folder");
         }
     }
+
+    hashObject(FileContent) {
+        return crypto.createHash('sha1').update(FileContent, 'utf-8').digest('hex');
+    }
+
+    async add(fileToAdd) {
+        const fileContent = await fs.readFile(fileToAdd , { encoding: 'utf-8' });
+        const fileHash = this.hashObject(fileContent);
+
+        console.log(fileHash);
+    }
 }
 
 const dis = new Dis();
+dis.add('demo.txt');
