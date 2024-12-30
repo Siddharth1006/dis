@@ -18,11 +18,11 @@ class Dis {
 
     async init() {
         //recursively creates an objects folder inside .dis folder.
-        fs.mkdir(this.objectsPath , { recursive:true });
+        await fs.mkdir(this.objectsPath , { recursive:true });
         
         try {
-            fs.writeFile(this.headPath, '' , {flag: 'wx'});
-            fs.writeFile(this.indexPath, JSON.stringify([]), {flag: 'wx'});
+            await fs.writeFile(this.headPath, '' , {flag: 'wx'});
+            await fs.writeFile(this.indexPath, JSON.stringify([]), {flag: 'wx'});
             //wx is open for writing. fails if file exists 
         } catch (error) {
             console.log("Already initialized the .dis folder");
