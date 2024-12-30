@@ -38,12 +38,19 @@ class Dis {
     async add(fileToAdd) {
         const fileContent = await fs.readFile(fileToAdd , { encoding: 'utf-8' });
         const fileHash = this.hashObject(fileContent);
-
-        console.log(fileHash);
-        
         const fileHashedObjectPath = path.join(this.objectsPath, fileHash); //adds to the object path - .dis/objects/ea09ef093797db5044495be55c9a85cea2d1eb41
         await fs.writeFile(fileHashedObjectPath, fileContent); //adds the file changes into the new file.
+        await this.updateStagingArea(fileToAdd , fileHash);
+
+        console.log(`Added ${fileToAdd}`);
     }
+
+    async updateStagingArea(filePath , fileHash) {
+        const index = JSON.parse(await fs.readFile(this.indexPath , { encoding: 'utf-8' })); // reads the existing content of index file
+        
+        index.push({ path : filePath , hash : fileHash }); // adds the file and the hash respectively to the array
+        await fs.writeFile(this.indexPath , JSON.stringify(index)); // writing back the updated index to the index file
+    } 
 }
 
 const dis = new Dis();
