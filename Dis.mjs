@@ -11,8 +11,6 @@ class Dis {
         // Adding for other internal folders present in .git folder. 
         this.objectsPath = path.join(this.repoPath , 'objects'); // .dis/objects
         this.headPath = path.join(this.repoPath, 'HEAD'); // .dis/hooks
-        
-        //staging area
         this.indexPath = path.join(this.repoPath, 'index'); // .dis/index
 
         this.init();
@@ -20,7 +18,16 @@ class Dis {
 
     async init() {
         //recursively creates an objects folder inside .dis folder.
-        await fs.mkdir(this.objectsPath , { recursive:true });
-    
+        fs.mkdir(this.objectsPath , { recursive:true });
+        
+        try {
+            fs.writeFile(this.headPath, '' , {flag: 'wx'});
+            fs.writeFile(this.indexPath, JSON.stringify([]), {flag: 'wx'});
+            //wx is open for writing. fails if file exists 
+        } catch (error) {
+            console.log("Already initialized the .dis folder");
+        }
     }
 }
+
+const dis = new Dis();
