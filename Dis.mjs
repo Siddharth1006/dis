@@ -63,13 +63,23 @@ class Dis {
             files: index,
             parent: parentCommit
         }
+
+        //whenever we commit, a hash is generated. Stored in objects folder
+        const commitHash = this.hashObject(JSON.stringify(commitData));
+        const commitPath = path.join(this.objectsPath , commitHash);
+        //write it to objects folder
+        await fs.writeFile(commitPath, JSON.stringify(commitData));
+
+        //updating the HEAD of the dis repo -> commitash
+        await fs.writeFile(this.headPath, commitHash);
+        await fs.writeFile(this.indexPath, JSON.stringify([])) // clears staging area
+        console.log(`Commited the changes successfully! Commit id = ${commitHash}`);
     }
 
     async getCurrentHEAD() {
         try {
             return await fs.readFile(this.headPath , { encoding: 'utf-8' });
         } catch {
-
         }
     }
 }
