@@ -41,8 +41,9 @@ class Dis {
         const fileHashedObjectPath = path.join(this.objectsPath, fileHash); //adds to the object path - .dis/objects/ea09ef093797db5044495be55c9a85cea2d1eb41
         await fs.writeFile(fileHashedObjectPath, fileContent); //adds the file changes into the new file.
         await this.updateStagingArea(fileToAdd , fileHash);
-
         console.log(`Added ${fileToAdd}`);
+        const commitMessage = prompt("Enter commit message")
+        await this.commit(commitMessage);
     }
 
     async updateStagingArea(filePath , fileHash) {
@@ -50,7 +51,27 @@ class Dis {
         
         index.push({ path : filePath , hash : fileHash }); // adds the file and the hash respectively to the array
         await fs.writeFile(this.indexPath , JSON.stringify(index)); // writing back the updated index to the index file
-    } 
+    }
+
+    async commit(message) {
+        const index = JSON.parse(await fs.readFile(this.indexPath , { encoding: 'utf-8' }));
+        const parentCommit = await this.getCurrentHEAD();
+
+        const commitData = {
+            timeStamp: new Date().toISOString(),
+            message,
+            files: index,
+            parent: parentCommit
+        }
+    }
+
+    async getCurrentHEAD() {
+        try {
+            return await fs.readFile(this.headPath , { encoding: 'utf-8' });
+        } catch {
+
+        }
+    }
 }
 
 const dis = new Dis();
