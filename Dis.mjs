@@ -1,7 +1,8 @@
 import path from 'path';
 import fs from 'fs/promises'
-
 import crypto from 'crypto';
+import chalk from 'chalk';
+import { diffLines } from 'diff';
 
 class Dis {
     // different methods => commit method, add files method.
@@ -113,6 +114,26 @@ class Dis {
             if (commitData.parent) {
                 const parentCommitData = JSON.parse(await this.getCommitData(commitData.parent));
                 const parentFileContent = await this.getParentFileContent(parentCommitData , file.path);
+                
+                if (parentFileContent !== undefined) {
+                    const diff = diffLines(parentFileContent , fileContent);
+                    console.log(`\nDiff: ${diff}`);
+
+                    //diff is an array
+                    diff.forEach(part => {
+                        if (part.added) {
+                            process.stdout.write("+" + chalk.green(part.value));
+                        } else if (part.removed) {
+                            process.stdout.write("-" + chalk.red(part.value));
+                        } else {
+                            process.stdout.write(chalk.grey(part.value));
+                        }
+                    });
+                    console.log();
+                }
+                else {
+                    console.log("Its first commit");   
+                }
             }
         }
     }
@@ -145,7 +166,8 @@ class Dis {
 
 (async () => {
     const dis = new Dis();
-    await dis.add('demo.txt');
-    await dis.commit('Fifth commit');
-    await dis.history();
+    // await dis.add('demo.txt');
+    // await dis.commit('Sixth commit');
+    // await dis.history();
+    await dis.showCommitDiff('3409523de784717dd61c75160720a392e2cfb621');
 })();
