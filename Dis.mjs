@@ -81,10 +81,22 @@ class Dis {
             return null; // first commit won't have HEAD. corner case
         }
     }
+
+    async history() {
+        let currentCommitHash = await this.getCurrentHEAD();
+        console.log("****** Dis History *****")
+        while (currentCommitHash) {
+            const commitData = JSON.parse(await fs.readFile(path.join(this.objectsPath, currentCommitHash), { encoding: 'utf-8' }));
+            console.log(`\nCommit: ${currentCommitHash}\nDate: ${commitData.timeStamp}\nCommit Message: ${commitData.message}\n`);
+
+                currentCommitHash = commitData.parent; //point to parent hash
+        }
+    }
 }
 
 (async () => {
     const dis = new Dis();
     await dis.add('demo.txt');
-    await dis.commit('Test commit');
+    await dis.commit('Fifth commit');
+    await dis.history();
 })();
